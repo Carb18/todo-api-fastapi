@@ -35,6 +35,7 @@ curl -i -X POST http://localhost:8000/tasks -H "Content-Type: application/json" 
 ```
 
 **Response:**
+```
 HTTP/1.1 201 Created
 date: Thu, 30 Jul 2026 02:20:00 GMT
 server: uvicorn
@@ -42,6 +43,7 @@ content-length: 65
 content-type: application/json
 
 {"id":4,"title":"Test task","description":"testing","done":false}
+```
 
 ## Swagger UI
 
