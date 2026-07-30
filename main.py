@@ -40,12 +40,12 @@ async def read_health():
     return {"status": "ok", "message": "API is healthy and running."}
 
 # Endpoint to get all tasks
-@app.get("/tasks")
+@app.get("/tasks", description="Get all tasks")
 async def get_tasks():
     return tasks
 
 # Endpoint to get a specific task by ID
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", description="Get a task by ID")
 async def get_task(task_id: int):
     for task in tasks:
         if task.id == task_id:
@@ -53,7 +53,7 @@ async def get_task(task_id: int):
     raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
 
 # Endpoint to create a new task
-@app.post("/tasks", status_code=201)
+@app.post("/tasks", description="Create a new task", status_code=201)
 async def create_task(task: TaskCreate):
    if task.title == "" or task.description == "":
         raise HTTPException(status_code=400, detail="Title and description cannot be empty")
@@ -61,7 +61,7 @@ async def create_task(task: TaskCreate):
    tasks.append(new_task)
    return new_task
 
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}", description="Update a task")
 async def update_task(task_id: int, updated_task: TaskUpdate):
     for task in tasks:
         if task.id == task_id:
@@ -76,7 +76,7 @@ async def update_task(task_id: int, updated_task: TaskUpdate):
             return task
     raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
 
-@app.delete("/tasks/{task_id}", status_code=204)
+@app.delete("/tasks/{task_id}", description="Delete a task", status_code=204)
 async def delete_task(task_id: int):
     for task in tasks:
         if task.id == task_id:
