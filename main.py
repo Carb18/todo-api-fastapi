@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
+from database import init_db
 
 
 class TaskCreate(BaseModel):
@@ -19,6 +20,7 @@ class TaskUpdate(BaseModel):
     done: Optional[bool] = None
 
 app = FastAPI()
+init_db()
 
 tasks = [Task(id=1, title="Task 1", description="Shut down the server", done=False),
          Task(id=2, title="Task 2", description="Buy some pancakes", done=True),
