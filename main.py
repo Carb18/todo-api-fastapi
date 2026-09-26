@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from database import init_db
+from database import init_db, get_all_tasks, get_task_by_id
+
 
 
 class TaskCreate(BaseModel):
@@ -22,9 +23,6 @@ class TaskUpdate(BaseModel):
 app = FastAPI()
 init_db()
 
-tasks = [Task(id=1, title="Task 1", description="Shut down the server", done=False),
-         Task(id=2, title="Task 2", description="Buy some pancakes", done=True),
-         Task(id=3, title="Task 3", description="Write a blog post", done=False)]
 
 
 #root Endpoint
@@ -42,17 +40,18 @@ async def read_health():
     return {"status": "ok", "message": "API is healthy and running."}
 
 # Endpoint to get all tasks
-@app.get("/tasks", description="Get all tasks")
-async def get_tasks():
-    return tasks
+@app.get("/tasks")
+def get_tasks():
+    return get_all_tasks()
 
 # Endpoint to get a specific task by ID
-@app.get("/tasks/{task_id}", description="Get a task by ID")
-async def get_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            return task
-    raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+
+@app.get("/tasks/{task_id}")
+def get_task(task_id: int):
+    task = get_task_by_id(task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail=f"Task with ID {task_id} not found")
+    return task
 
 # Endpoint to create a new task
 @app.post("/tasks", description="Create a new task", status_code=201)
