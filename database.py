@@ -15,6 +15,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
+            description TEXT NOT NULL,
             done BOOLEAN NOT NULL DEFAULT 0
         )
     """)
@@ -24,8 +25,10 @@ def init_db():
 
     if count == 0:
         cursor.executemany(
-            "INSERT INTO tasks (title, done) VALUES (?, ?)",
-            [("Buy groceries", 0), ("Read a book", 0), ("Walk the dog", 0)]
+            "INSERT INTO tasks (title, description, done) VALUES (?, ?, ?)",
+            [("Buy groceries", "Eggs, bread, Milk", 0),
+             ("Read a book", "Finish chapter 4", 0),
+             ("Walk the dog", "Evening walk around the block", 0)]
         )
 
     conn.commit()
@@ -46,3 +49,16 @@ def get_task_by_id(task_id: int):
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
+
+def create_task(title: str, description: str, done: bool = False):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO tasks (title, description, done) VALUES (?, ?, ?)",
+        (title, description, done)
+    )
+    conn.commit()
+    new_id = cursor.lastrowid
+    conn.close()
+    return get_task_by_id(new_id)
+
