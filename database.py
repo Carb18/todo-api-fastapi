@@ -62,3 +62,34 @@ def create_task(title: str, description: str, done: bool = False):
     conn.close()
     return get_task_by_id(new_id)
 
+def update_task(task_id: int, title: str= None , description: str = None, done: bool = None):
+    existing = get_task_by_id(task_id)
+    if existing is None:
+        return None
+
+    new_title = title if title is not None else existing["title"]
+    new_description = description if description is not None else existing["description"]
+    new_done = done if done is not None else existing["done"]
+
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE tasks SET title = ?, description = ?, done = ? WHERE id = ?",
+        (new_title, new_description, new_done, task_id)
+    )
+    conn.commit()
+    conn.close()
+    return get_task_by_id(task_id)
+
+
+def delete_task(task_id: int):
+    existing = get_task_by_id(task_id)
+    if existing is None:
+        return False
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+    conn.commit()
+    conn.close()
+    return True
+
