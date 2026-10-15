@@ -45,13 +45,13 @@ async def read_health():
     return {"status": "ok", "message": "API is healthy and running."}
 
 # Endpoint to get all tasks
-@app.get("/tasks")
+@app.get("/tasks", response_model=list[Task])
 def get_tasks():
     return get_all_tasks()
 
 # Endpoint to get a specific task by ID
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", response_model=Task)
 def get_task(task_id: int):
     task = get_task_by_id(task_id)
     if task is None:
@@ -59,14 +59,14 @@ def get_task(task_id: int):
     return task
 
 # Endpoint to create a new task
-@app.post("/tasks", status_code=201)
+@app.post("/tasks", status_code=201, response_model=Task)
 def add_task(task: TaskCreate):
     if not task.title or not task.title.strip():
         raise HTTPException(status_code=400, detail="Title is required")
     return create_task(task.title, task.description)
 
 # Endpoint to update a specific task
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{task_id}", response_model=Task)
 def edit_task(task_id: int, task: TaskUpdate):
     updated = update_task(task_id, task.title, task.description, task.done)
     if updated is None:
